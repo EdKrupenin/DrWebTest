@@ -5,43 +5,50 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.drwebtest.di.SomeDependency
+import com.example.drwebtest.ui.screen.AppListScreen
+import com.example.drwebtest.ui.screen.TopBar
 import com.example.drwebtest.ui.theme.DrWebTestTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var someDependency: SomeDependency
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println(someDependency.sayHello())
         enableEdgeToEdge()
         setContent {
             DrWebTestTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Scaffold(
+                    topBar = {
+                        TopBar(
+                            title = "Installed Apps",
+                            showBackButton = false,
+                            onBackClick = { onBackPressedDispatcher.onBackPressed() }
+                        )
+                             },
+                    modifier = Modifier.fillMaxSize())
+                { innerPadding ->
+                    AppListScreen(innerPadding = innerPadding)
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     DrWebTestTheme {
-        Greeting("Android")
+        //AppListScreen()
     }
 }
