@@ -2,8 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/FilmsMatch" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/FilmsMatchCompose" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/abocha_android_basic_single_activity_fragments" vcs="Git" />
   </component>
 </project>

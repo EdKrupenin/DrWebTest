@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.drwebtest.di.SomeDependency
 import com.example.drwebtest.ui.screen.AppListScreen
+import com.example.drwebtest.ui.screen.AppNavigation
 import com.example.drwebtest.ui.screen.TopBar
 import com.example.drwebtest.ui.theme.DrWebTestTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,18 +29,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DrWebTestTheme {
-                Scaffold(
-                    topBar = {
-                        TopBar(
-                            title = "Installed Apps",
-                            showBackButton = false,
-                            onBackClick = { onBackPressedDispatcher.onBackPressed() }
-                        )
-                             },
-                    modifier = Modifier.fillMaxSize())
-                { innerPadding ->
-                    AppListScreen(innerPadding = innerPadding)
-                }
+                AppNavigation()
             }
         }
     }
