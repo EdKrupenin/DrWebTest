@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.pm.PackageManager
 import com.example.drwebtest.repository.AppRepository
 import com.example.drwebtest.repository.IAppRepository
-import dagger.Binds
+import com.example.drwebtest.utils.ChecksumUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,10 +14,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
-    fun provideSomeDependency(): SomeDependency {
-        return SomeDependency()
+    @Singleton
+    fun provideChecksumUtils(): ChecksumUtils {
+        return ChecksumUtils()
     }
 
     @Provides
@@ -28,12 +28,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAppRepository(
-        packageManager: PackageManager
+        packageManager: PackageManager,
+        checksumUtils: ChecksumUtils
     ): IAppRepository {
-        return AppRepository(packageManager)
+        return AppRepository(packageManager,checksumUtils)
     }
-}
-
-class SomeDependency {
-    fun sayHello(): String = "Hello from Hilt!"
 }

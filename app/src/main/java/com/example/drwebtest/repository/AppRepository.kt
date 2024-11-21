@@ -2,13 +2,15 @@ package com.example.drwebtest.repository
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import com.example.drwebtest.utils.ChecksumUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
 class AppRepository @Inject constructor(
-    private val packageManager: PackageManager
+    private val packageManager: PackageManager,
+    private val checksumUtils: ChecksumUtils
 ) : IAppRepository {
     override suspend fun getInstalledApps(): List<ApplicationInfo> {
         return withContext(Dispatchers.IO) {
@@ -26,7 +28,7 @@ class AppRepository @Inject constructor(
                 "Unknown"
             }
             val apkFile = File(appInfo.sourceDir)
-            val checksum = "" // TODO: C++ libs for checksum calculation
+            val checksum = checksumUtils.calculateSHA1(apkFile.path)
 
             AppDetail(label, packageName, version, checksum)
         }
