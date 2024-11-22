@@ -1,8 +1,6 @@
 package com.example.drwebtest.repository
 
-import android.content.pm.ApplicationInfo
-
 interface IAppRepository {
-    suspend fun getInstalledApps(): List<ApplicationInfo>
-    suspend fun parseApplicationInfo(appInfo: ApplicationInfo): AppDetail
+    suspend fun getInstalledApps(): List<AppListItemData>
+    suspend fun getAppDetails(packageName: String): AppDetail
 }
