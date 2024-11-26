@@ -1,12 +1,11 @@
 package com.example.drwebtest.repository
 
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
-import androidx.core.graphics.drawable.toBitmap
 import com.example.drwebtest.utils.ChecksumUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileNotFoundException
 import javax.inject.Inject
 
 class AppRepository @Inject constructor(
@@ -27,18 +26,43 @@ class AppRepository @Inject constructor(
 
     override suspend fun getAppDetails(packageName: String): AppDetail {
         return withContext(Dispatchers.IO) {
-            val appInfo = packageManager.getApplicationInfo(packageName, 0)
+            val appInfo = safeCall(
+                action = { packageManager.getApplicationInfo(packageName, 0) },
+                onError = { throw IllegalArgumentException("Package not found: $packageName", it) }
+            )
+
             val label = appInfo.loadLabel(packageManager).toString()
-            val version = try {
-                packageManager.getPackageInfo(packageName, 0).versionName ?: "Unknown"
-            } catch (e: Exception) {
-                "Unknown"
-            }
+
+            val version = safeCall(
+                action = {
+                    packageManager.getPackageInfo(packageName, 0).versionName ?: "Unknown"
+                },
+                onError = { "Unknown" }
+            )
+
             val icon = appInfo.loadIcon(packageManager)
+
             val apkFile = File(appInfo.sourceDir)
-            val checksum = checksumUtils.calculateSHA1(apkFile.path)
+            if (!apkFile.exists()) {
+                throw FileNotFoundException("APK file not found: ${apkFile.path}")
+            }
+
+            val checksum = safeCall(
+                action = { checksumUtils.calculateSHA1(apkFile.path) },
+                onError = { throw RuntimeException("Failed to calculate SHA1 for ${apkFile.path}", it) }
+            )
 
             AppDetail(label, packageName, version, icon, checksum)
         }
     }
+
+    private inline fun <T> safeCall(action: () -> T, onError: (Throwable) -> T): T {
+        return try {
+            action()
+        } catch (e: Throwable) {
+            onError(e)
+        }
+    }
 }
+
+
