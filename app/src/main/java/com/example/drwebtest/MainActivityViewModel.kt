@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.drwebtest.repository.AppDetail
 import com.example.drwebtest.repository.AppListItemData
 import com.example.drwebtest.repository.IAppRepository
-import com.example.drwebtest.utils.IAppLauncher
+import com.example.drwebtest.utils.IAppChangeManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val appRepository: IAppRepository,
-    private val appLauncher: IAppLauncher
+    private val appChangeManager: IAppChangeManager,
 ) : ViewModel() {
 
     private val _apps = MutableStateFlow<List<AppListItemData>>(emptyList())
@@ -31,6 +31,9 @@ class MainActivityViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading
 
     init {
+        appChangeManager.setListener {
+            loadApps()
+        }
         loadApps()
     }
 
@@ -49,7 +52,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onLaunchAppClicked(packageName: String) {
-        val result = appLauncher.launchApp(packageName)
+        val result = appChangeManager.launchApp(packageName)
         result.onFailure { error ->
             _launchAppEvent.value = error.message.toString()
         }

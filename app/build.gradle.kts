@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.core)
     kapt(libs.hilt.android.compiler)
 
+    implementation(libs.glide)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

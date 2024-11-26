@@ -1,9 +1,11 @@
 package com.example.drwebtest
 
+import android.content.BroadcastReceiver
 import android.content.Context
-import android.graphics.Bitmap
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,16 +18,16 @@ import com.example.drwebtest.repository.AppListItemData
 import com.example.drwebtest.repository.IAppRepository
 import com.example.drwebtest.ui.screen.AppListScreen
 import com.example.drwebtest.ui.theme.DrWebTestTheme
-import com.example.drwebtest.utils.IAppLauncher
+import com.example.drwebtest.utils.IAppChangeManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.CustomTestApplication
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.HiltTestApplication
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -82,12 +84,12 @@ object FakeAppModule {
                 AppListItemData(
                     name = "Test App 1",
                     packageName = "com.example.app1",
-                    icon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+                    icon = mockk<Drawable>()
                 ),
                 AppListItemData(
                     name = "Test App 2",
                     packageName = "com.example.app2",
-                    icon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+                    icon = mockk<Drawable>()
                 )
             )
         )
@@ -95,7 +97,7 @@ object FakeAppModule {
 
     @Provides
     @Singleton
-    fun provideFakeAppLauncher(@ApplicationContext context: Context): IAppLauncher {
+    fun provideFakeAppLauncher(@ApplicationContext context: Context): IAppChangeManager {
         return FakeAppLauncher(context)
     }
 
@@ -111,7 +113,34 @@ class FakeAppRepository(private val apps: List<AppListItemData>) : IAppRepositor
     }
 }
 
-class FakeAppLauncher (private val context: Context) : IAppLauncher {
+class FakeAppLauncher (private val context: Context) : IAppChangeManager {
+    private var listener: (() -> Unit)? = null
+    private val appChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val action = intent?.action
+            if (action == Intent.ACTION_PACKAGE_ADDED || action == Intent.ACTION_PACKAGE_REMOVED) {
+                listener?.invoke()
+            }
+        }
+    }
+
+    override fun startListening() {
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addDataScheme("package")
+        }
+        context.registerReceiver(appChangeReceiver, filter)
+    }
+
+    override fun stopListening() {
+        context.unregisterReceiver(appChangeReceiver)
+    }
+
+    override fun setListener(listener: () -> Unit) {
+        this.listener = listener
+    }
+
     override fun launchApp(packageName: String): Result<Unit> {
         return try {
             Result.success(Unit)

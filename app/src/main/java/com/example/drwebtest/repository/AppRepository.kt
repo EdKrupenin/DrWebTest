@@ -19,7 +19,7 @@ class AppRepository @Inject constructor(
                 AppListItemData(
                     name = appInfo.loadLabel(packageManager).toString(),
                     packageName = appInfo.packageName,
-                    icon = (appInfo.loadIcon(packageManager) as Drawable).toBitmap()
+                    icon = appInfo.loadIcon(packageManager)
                 )
             }
         }
@@ -34,7 +34,7 @@ class AppRepository @Inject constructor(
             } catch (e: Exception) {
                 "Unknown"
             }
-            val icon = (appInfo.loadIcon(packageManager) as Drawable).toBitmap()
+            val icon = appInfo.loadIcon(packageManager)
             val apkFile = File(appInfo.sourceDir)
             val checksum = checksumUtils.calculateSHA1(apkFile.path)
 

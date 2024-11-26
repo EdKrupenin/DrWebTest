@@ -1,7 +1,6 @@
 package com.example.drwebtest.ui.screen
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.drwebtest.MainActivityViewModel
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AppDetailScreen(
     innerPadding: PaddingValues,
@@ -52,8 +53,8 @@ fun AppDetailScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            Image(
-                bitmap = appDetail.icon.asImageBitmap(),
+            GlideImage(
+                model = appDetail.icon,
                 contentDescription = null,
                 modifier = Modifier.size(128.dp)
                     .padding(bottom = 16.dp)

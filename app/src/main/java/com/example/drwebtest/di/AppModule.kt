@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import com.example.drwebtest.repository.AppRepository
 import com.example.drwebtest.repository.IAppRepository
-import com.example.drwebtest.utils.AppLauncher
+import com.example.drwebtest.utils.AppChangeManager
 import com.example.drwebtest.utils.ChecksumUtils
-import com.example.drwebtest.utils.IAppLauncher
+import com.example.drwebtest.utils.IAppChangeManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,12 +20,6 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideAppLauncher(@ApplicationContext context: Context): IAppLauncher {
-        return AppLauncher(context)
-    }
-
-    @Provides
-    @Singleton
     fun provideChecksumUtils(): ChecksumUtils {
         return ChecksumUtils()
     }
@@ -33,6 +27,12 @@ object AppModule {
     @Provides
     fun providePackageManager(application: Application): PackageManager {
         return application.packageManager
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppChangeManager(@ApplicationContext context: Context): IAppChangeManager {
+        return AppChangeManager(context)
     }
 
     @Provides

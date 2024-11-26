@@ -3,7 +3,7 @@ package com.example.drwebtest
 import com.example.drwebtest.repository.AppDetail
 import com.example.drwebtest.repository.AppListItemData
 import com.example.drwebtest.repository.IAppRepository
-import com.example.drwebtest.utils.IAppLauncher
+import com.example.drwebtest.utils.IAppChangeManager
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -29,7 +29,7 @@ class MainActivityViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val appRepository = mockk<IAppRepository>()
-    private val appLauncher = mockk<IAppLauncher>()
+    private val appLauncher = mockk<IAppChangeManager>()
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var mockApps : List<AppListItemData>
 

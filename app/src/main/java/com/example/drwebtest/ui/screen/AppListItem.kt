@@ -13,10 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.drwebtest.repository.AppListItemData
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AppListItem(app: AppListItemData, onClick: () -> Unit) {
     Row(
@@ -26,8 +28,8 @@ fun AppListItem(app: AppListItemData, onClick: () -> Unit) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            bitmap = app.icon.asImageBitmap(),
+        GlideImage(
+            model = app.icon,
             contentDescription = null,
             modifier = Modifier.size(48.dp)
         )
